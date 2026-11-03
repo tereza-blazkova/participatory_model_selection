@@ -1,0 +1,24 @@
+[project]
+name = "ews-modeling"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    # numpy is deliberately unpinned: FasterRisk 0.1.10 fits and predicts on
+    # numpy 2.x. The smoke test in models/fasterrisk_model.py checks this;
+    # run `python -m models.fasterrisk_model` to check a new environment.
+    "numpy",
+    "pandas>=2.0",
+    "scikit-learn==1.8.0",
+    "scipy",
+    "matplotlib",
+    "pyarrow",
+    "xgboost==3.2.0",
+    "torch",              # models/mlp_model.py
+    "joblib",
+    "plotly",
+    "graphviz",
+    "packaging",
+    "fasterrisk==0.1.10",
+    "optuna==4.8.0",
+    "shap",               # src/shap_plots.py
+]

@@ -1,0 +1,38 @@
+# Generated data — recreate with data/generate_fake_df.py and
+# data/generate_pilot_snapshot.py. No data file of any kind is part of this repository.
+*.parquet
+*.csv
+*.tsv
+*.feather
+*.arrow
+*.pkl
+*.pickle
+*.xls
+*.xlsx
+*.joblib
+*.npy
+*.npz
+*.h5
+*.hdf5
+*.db
+*.sqlite
+*.ipynb
+*.zip
+*.gz
+
+# Everything the pipeline writes — recreate with run_all.py
+results/
+figures/input/*
+figures/output/*
+!figures/*/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Editor / OS
+.DS_Store
+.ipynb_checkpoints/

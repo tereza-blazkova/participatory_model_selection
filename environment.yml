@@ -1,0 +1,23 @@
+name: ews-modeling
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - numpy
+  - pandas
+  - scikit-learn=1.8.0
+  - scipy
+  - matplotlib
+  - pyarrow
+  - py-xgboost=3.2.0
+  - pytorch            # models/mlp_model.py — the MLP is a PyTorch net, not sklearn
+  - joblib
+  - plotly
+  - python-graphviz
+  - packaging
+  - pip
+  - pip:
+      - fasterrisk==0.1.10
+      - optuna==4.8.0
+      - shap           # src/shap_plots.py
