@@ -2,7 +2,7 @@
 Group-specific decision thresholds, used by the equalized-recall audit.
 
 equal_opportunity_thresholds() sets a per-group τ_g so that recall is equal
-across groups (Hardt et al. 2016); budgeted_equal_opportunity_thresholds() does
+across groups; budgeted_equal_opportunity_thresholds() does
 the same under the capacity budget of the global threshold, and
 apply_group_thresholds() flags each enrollment at its group's τ_g. All work on
 the already-trained max_prob scores — no retraining.

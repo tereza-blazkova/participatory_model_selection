@@ -117,7 +117,7 @@ def _load_saved_params(model_name: str, config_name: str, models_dir: Path) -> d
     """
     Load tuned hyperparameters saved by a previous --tune run, if present.
 
-    Retraining without --tune silently rebuilds every model at library defaults
+    Retraining without --tune silently rebuilds every model at its fixed defaults
     and overwrites the .joblib files; the _best_params.json files survive because
     they are only written when tuning. This reads them back so a re-run can
     reproduce the tuned models without repeating the search.
@@ -269,8 +269,7 @@ def _audit_predictions(
 
 # ── Tuning defaults (overridden by CLI args) ───────────────────────────────────
 TUNE        = False
-## 30 trials, as in Nielsen et al. (2025, ch. 4), whose MLP this project
-## follows; they gave their linear model 30 too. Applies to every model.
+## 30 trials, as in the reference network the MLP follows. Applies to every model.
 N_TUNE_ITER = 30
 TUNE_CV     = 3
 
@@ -313,7 +312,7 @@ def run_all(
         if saved:
             print(
                 f"\n  WARNING: {len(saved)} tuned parameter file(s) exist in {models_dir}\n"
-                "  but are being IGNORED — every model will be trained at library defaults,\n"
+                "  but are being IGNORED — every model will be trained at its fixed defaults,\n"
                 "  and the existing .joblib files will be overwritten with those defaults.\n"
                 "  Models whose performance depends on tuning may perform differently here.\n"
                 "  Pass --use-saved-params to refit the tuned configurations without re-searching,\n"
@@ -794,7 +793,7 @@ if __name__ == "__main__":
                              "Default 1 (no repeats).")
     parser.add_argument("--use-saved-params", action="store_true", dest="use_saved_params",
                         help="Refit each model from its saved _best_params.json instead of "
-                             "library defaults (no Optuna search). Ignored with --tune.")
+                             "fixed defaults (no Optuna search). Ignored with --tune.")
     parser.add_argument("--strict",       action="store_true",
                         help="Exit non-zero if any feature set collapses (signal-free columns "
                              "or degenerate enrollment scores)")

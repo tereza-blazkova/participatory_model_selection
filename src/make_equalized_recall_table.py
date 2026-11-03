@@ -4,7 +4,7 @@ Generate the LaTeX table for the equalized-recall threshold audit
 
 One row per subgroup axis (sex, nationality, entry age relative to cohort): the Participatory
 model's current single-threshold recall vs. the pooled recall that results
-from equal-opportunity (Hardt et al. 2016) group-specific thresholds, the
+from equal-opportunity group-specific thresholds, the
 difference in percentage points, the residual error-rate gap at the
 equalized thresholds, and a 95% bootstrap CI on the difference.
 
@@ -172,7 +172,7 @@ def build_table(df: pd.DataFrame) -> str:
         f"model ({model_display}, feature set {feature_set_tex}, "
         f"test year {test_year})." + "} "
         r"For each subgroup axis, group-specific decision thresholds are set via "
-        r"equal opportunity \citep{hardtEqualityOpportunitySupervised2016} so recall is equalized across the "
+        r"equal opportunity so recall is equalized across the "
         r"two groups (to within one student per group, since a threshold cannot split "
         r"students), holding the Participatory model's predicted probabilities fixed "
         r"(no retraining). " + budget_sentence +

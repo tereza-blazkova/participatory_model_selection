@@ -103,9 +103,8 @@ def _enrollment_quantile_threshold(
     close as possible to — but not above — the training enrollment-level
     dropout rate. This aligns threshold calibration with the unit of
     evaluation (enrollment), so "the share of enrollments we flag" matches
-    "the share that drop out in training". Follows the spirit of Yu et al.
-    (10.1145/3430895.3460139) while operating at the enrollment level rather
-    than the EWS-row level.
+    "the share that drop out in training". It operates at the enrollment
+    level rather than the EWS-row level.
 
     See `conservative_threshold` for the rounding rule and why it rounds down.
 
@@ -462,7 +461,7 @@ def credits_policy_metrics(df_subset, ects_threshold=60, target="dropout"):
         "roc_auc":               round(auc, 3) if not np.isnan(auc) else np.nan,
     }
 
-## ABROCA grid resolution — the default of Gardner et al.'s own implementation.
+## ABROCA grid resolution.
 ABROCA_N_GRID = 10_000
 _trapz = getattr(np, "trapezoid", None) or getattr(np, "trapz")  # renamed in NumPy 2.0
 
@@ -476,7 +475,7 @@ def roc_on_grid(y_true, score, fpr_grid) -> tuple[np.ndarray, float]:
 
 def abroca(tpr_ref, tpr_comp, fpr_grid) -> float:
     """
-    Absolute Between-ROC Area (Gardner, Brooks & Baker, LAK 2019):
+    Absolute Between-ROC Area:
     the integral over FPR of |ROC_comp - ROC_ref|, for two ROC curves already
     on a common grid (roc_on_grid).
 

@@ -1,7 +1,7 @@
 """
 Fairness-accuracy frontier, decomposed two ways: by data availability and by
-model complexity. Companion to src/fa_frontier.py, same framework (Liang, Lu,
-Mu & Okumura, JPE 2024), different question.
+model complexity. Companion to src/fa_frontier.py, same framework, different
+question.
 
     2 × 3 grid
       row 1   — DATA ladder:  logistic regression, feature sets a → e
@@ -16,7 +16,7 @@ so each rung's frontier can only weakly improve — no proposition is needed for
 that. A crossing is therefore estimation noise or overfitting, not a finding,
 which makes this row a validity check as much as a measurement.
 
-Their comparative statics on adding covariates or group identity (e.g. "more data
+The framework's comparative statics on adding covariates or group identity (e.g. "more data
 can hurt a fairness-minded designer", or when adding group identity helps) are
 results for the *input design* setting, where an accuracy-maximising agent picks
 the algorithm and the designer only chooses its inputs. That wedge does not
@@ -41,11 +41,10 @@ Choices baked in
     value to LR", not "no value in principle".
   - The model ladder is held at **c_plus_enrolment**, a rung without the
     sensitive attribute — so all four models are compared group-blind, with
-    no Proposition 2 rectangle effect mixed into the model comparison.
+    no group-specific-threshold effect mixed into the model comparison.
   - `e_plus_sensitive` is drawn **twice** in the data row: solid without
     group-aware rules, dashed with them. That separates the effect of more
-    covariates from the Proposition 2 effect (group-specific thresholds become
-    admissible).
+    covariates from the effect of group-specific thresholds becoming admissible.
   - The credits policy is not shown; these panels compare data and models, and
     the policy baseline lives on the main figure.
 

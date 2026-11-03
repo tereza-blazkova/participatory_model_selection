@@ -4,7 +4,7 @@ channels:
   - defaults
 dependencies:
   - python=3.11
-  - numpy
+  - numpy=2.2.6
   - pandas
   - scikit-learn=1.8.0
   - scipy
@@ -16,8 +16,8 @@ dependencies:
   - plotly
   - python-graphviz
   - packaging
+  - requests
   - pip
   - pip:
-      - fasterrisk==0.1.10
       - optuna==4.8.0
       - shap           # src/shap_plots.py

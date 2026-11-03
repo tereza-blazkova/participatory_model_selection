@@ -1,16 +1,15 @@
 """
 PyTorch feedforward network for tabular input.
 
-Search space, training and tuning follow the tabular feedforward network of
-Nielsen et al. (2025), "From Birth to Adulthood", chapter 4 of M. L. Nielsen's
-PhD dissertation, as closely as our task allows.
+Search space, training and tuning follow the reference tabular feedforward
+network cited in the paper, as closely as our task allows.
 
   train()             — default params, returns an sklearn Pipeline
   train_with_params() — given params dict, returns an sklearn Pipeline
   train_tuned()       — Optuna search on leave-one-cohort-out CV, returns a
                         Pipeline carrying best_params_
 
-What follows chapter 4
+What follows the reference network
   - Architecture: Linear/ReLU stack. Depth 1-5 and the width of every layer
     (16-256) are searched independently.
   - Regularisation: an elastic-net penalty on the weights added to the loss,
@@ -19,16 +18,16 @@ What follows chapter 4
   - Optimiser: AdamW with its default parameters and a CONSTANT learning rate,
     searched on a log scale. No schedule.
   - Fixed batch size and epoch count; the best epoch is chosen on validation.
-  - Optuna, no pruning. The trial count is --n-iter; chapter 4 used 30.
+  - Optuna, no pruning. The trial count is --n-iter; the reference used 30.
   - Numerics mean-imputed and standardised (build_preprocessor(standardize=True)).
-  - Hyperparameter names match theirs: n_layers, n_units_l{i}, alpha,
+  - Hyperparameter names match the reference: n_layers, n_units_l{i}, alpha,
     l1_ratio, lr — so the two search-space tables read the same way.
 
 Where we differ, and why
-  - Batch 512, smaller than the reference's 4096, to keep a comparable number
+  - Batch 512, smaller than the reference's, to keep a comparable number
     of optimiser steps on a smaller training set. See _BATCH_SIZE.
   - Dropout is searched as ONE EXTRA axis (0-0.9, default 0). Dropout 0 is
-    chapter 4's network exactly, so theirs is a point inside our search space.
+    the reference network exactly, so it is a point inside our search space.
     It gives the search a second form of regularisation for the wide
     one-hot block of high-cardinality categoricals; the L1 term may make it
     redundant, and the selected values will say so.
@@ -36,8 +35,7 @@ Where we differ, and why
     n_neg / n_pos, the same imbalance correction the other models make, and
     the search maximises enrollment-level AUC rather than minimising MSE.
   - Validation is leave-one-cohort-out over the three training years, not a
-    random 80/10/10 split — chapter 4 itself names the random split as a
-    limitation, and a split within cohorts cannot penalise cohort-specific
+    random split, because a split within cohorts cannot penalise cohort-specific
     fitting. The best epoch is the one with the highest MEAN AUC across the
     three held-out cohorts.
   - The final model is refit on all training rows for that best number of
@@ -75,9 +73,9 @@ from src.metrics import _enrollment_auc_from_arrays
 
 optuna.logging.set_verbosity(optuna.logging.WARNING)
 
-## Fixed training budget. Chapter 4 trains every candidate for 5 epochs at
-## batch 4096 and keeps its best epoch. The batch is scaled rather than copied:
-## 512, smaller than the reference's 4096, keeps a comparable number of
+## Fixed training budget. Every candidate trains for 5 epochs and keeps its best
+## epoch. The batch is scaled rather than copied from the reference network:
+## 512 keeps a comparable number of
 ## optimiser steps on a smaller training set.
 ##
 ## The search fold is the one that matters: it is where settings are chosen.
@@ -101,13 +99,13 @@ _DEFAULT_DEVICE = MLP_DEVICE
 ## so it is set at import time rather than inside _set_determinism().
 os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
 
-## Trial 0 of every search, and what an untuned train() fits. Chapter 4 gives
-## no defaults, so these are chosen to sit inside its space and start mild:
+## Trial 0 of every search, and what an untuned train() fits. The reference
+## gives no defaults, so these are chosen to sit inside its space and start mild:
 ##   (128, 64) — two layers of moderate, tapering width;
 ##   alpha at the bottom of its range, l1_ratio at an even L1/L2 split
 ##               (scikit-learn's ElasticNet default);
 ##   lr 1e-3   — AdamW's own default;
-##   dropout 0 — so trial 0 is chapter 4's network, with no extra axis in use.
+##   dropout 0 — so trial 0 is the reference network, with no extra axis in use.
 _DEFAULTS = {
     "n_layers":     2,
     "n_units_l0":   128,
@@ -137,8 +135,8 @@ class _FeedforwardNet(nn.Module):
     wide-and-deep hybrid that partly contains the logistic regression it is
     being compared against.
 
-    Every layer keeps PyTorch's default initialisation. Chapter 4 describes no
-    custom initialisation, so none is used.
+    Every layer keeps PyTorch's default initialisation. The reference describes
+    no custom initialisation, so none is used.
     """
 
     def __init__(self, input_dim: int, hidden_sizes: tuple, dropout_rate: float = 0.0):
@@ -210,7 +208,7 @@ def _resolve_device(preferred: str | None = None) -> torch.device:
 
 def _elastic_net(net: nn.Module, alpha: float, l1_ratio: float) -> torch.Tensor:
     """
-    Chapter 4's penalty: alpha * (l1_ratio * |w|_1 + (1 - l1_ratio) * |w|_2^2),
+    The reference's penalty: alpha * (l1_ratio * |w|_1 + (1 - l1_ratio) * |w|_2^2),
     summed over the weight matrices of every layer. Biases are not penalised.
 
     The L1 part can drive a weight to exactly zero, which on the first layer
@@ -283,7 +281,7 @@ def _fit_net(
     criterion = nn.BCEWithLogitsLoss(pos_weight=pos_w)
 
     ## AdamW with its default parameters and a constant learning rate, as in
-    ## chapter 4. Note the defaults include weight_decay=0.01, applied on top
+    ## the reference. Note the defaults include weight_decay=0.01, applied on top
     ## of the elastic-net term — "default parameters", taken literally.
     optimizer = torch.optim.AdamW(net.parameters(), lr=lr)
 
@@ -359,13 +357,13 @@ class PyTorchMLP(ClassifierMixin, BaseEstimator):
     #   8  skip path zero-initialised too, so an untrained skip adds nothing
     #   9  batch and epoch grids narrowed
     #  10  linear skip path removed; default architecture (128, 64)
-    #  11  aligned with Nielsen et al. (2025, ch. 4): free depth/width search,
+    #  11  aligned with the reference network: free depth/width search,
     #      elastic-net penalty in the loss, AdamW defaults with a constant LR
     #      (no one-cycle), fixed batch 1024 x 5 epochs with the best epoch chosen
     #      on cross-validated AUC, mean imputation + StandardScaler. Dropout kept
     #      as one extra searched axis.
     #  12  output layer no longer zero-initialised: PyTorch's default
-    #      initialisation throughout, as in chapter 4. The zeroing was needed only
+    #      initialisation throughout, as in the reference. The zeroing was needed only
     #      while the skip path existed.
     TRAINING_CODE_VERSION = 12
 
@@ -525,9 +523,9 @@ def train_tuned(
 
     Every trial trains each fold for _EPOCHS epochs and scores the held-out
     cohort after EVERY epoch. The trial's best epoch is the one with the highest
-    AUC averaged over the folds, and the trial's value is that AUC — chapter 4's
-    "best epoch, then best trial", with the mean over held-out cohorts in place
-    of their single validation set. The winner is refit on all training rows for
+    AUC averaged over the folds, and the trial's value is that AUC: best epoch,
+    then best trial, with the mean over held-out cohorts in place of a single
+    validation set. The winner is refit on all training rows for
     exactly that many epochs.
     """
     y_arr      = np.asarray(y_train)
@@ -563,13 +561,13 @@ def train_tuned(
         })
 
     def objective(trial: optuna.Trial) -> float:
-        ## Chapter 4's search space, with their names and ranges.
+        ## The reference's search space, with its names and ranges.
         n_layers = trial.suggest_int("n_layers", 1, 5)
         hidden   = tuple(trial.suggest_int(f"n_units_l{i}", 16, 256) for i in range(n_layers))
         alpha    = trial.suggest_float("alpha", 1e-4, 0.1, log=True)
         l1_ratio = trial.suggest_float("l1_ratio", 0.0, 1.0)
         lr       = trial.suggest_float("lr", 1e-4, 0.1, log=True)
-        ## Our one addition. 0 reproduces chapter 4's network exactly.
+        ## Our one addition. 0 reproduces the reference network exactly.
         dropout_rate = trial.suggest_float("dropout_rate", 0.0, 0.9)
 
         ## auc[fold][epoch-1]: held-out-cohort AUC after each epoch.
@@ -597,7 +595,7 @@ def train_tuned(
         trial.set_user_attr("cv_auc_by_epoch", [round(float(v), 5) for v in mean_by_epoch])
         return float(mean_by_epoch.max())
 
-    ## No pruner: chapter 4 describes none, and every trial runs in full.
+    ## No pruner: every trial runs in full.
     study = optuna.create_study(
         direction="maximize",
         sampler=optuna.samplers.TPESampler(seed=RANDOM_SEED),

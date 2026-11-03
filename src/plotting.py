@@ -410,8 +410,8 @@ def performance_by_period_series(
     max_activation: int | None = None,
 ) -> dict:
     """
-    The performance-by-period figure's content — a replication of Blazkova et al.
-    (2025) for the Participatory model, as series rather than a drawing.
+    The performance-by-period figure's content for the Participatory model, as
+    series rather than a drawing.
 
     (a) Overall model performance: AUC, Accuracy, Recall, Precision, TNR by EWS period.
     (b) Female − Male metric differences.

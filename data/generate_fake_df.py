@@ -130,15 +130,6 @@ programme_code         = rng.choice([f"prog_{i}" for i in range(1, 11)],  size=N
 degree_level      = np.where(undergraduate == 1, "BA", "MA")
 
 person_id          = [f"per_{x}" for x in rng.integers(100000, 999999, N_ENROLLMENTS)]
-student_number           = [f"stu_{x}" for x in rng.integers(100000, 999999, N_ENROLLMENTS)]
-external_person_id  = [f"ext_{x}" for x in rng.integers(100000, 999999, N_ENROLLMENTS)]
-canvas_user_id     = [f"cvs_{x}" for x in rng.integers(100000, 999999, N_ENROLLMENTS)]
-
-birth_date       = pd.to_datetime(rng.integers(
-    pd.Timestamp("1970-01-01").value,
-    pd.Timestamp("2005-12-31").value,
-    N_ENROLLMENTS,
-))
 
 current_status   = rng.choice(["A", "B"], size=N_ENROLLMENTS)
 enrollment_code  = rng.choice([f"EC{i}" for i in range(10)], size=N_ENROLLMENTS)
@@ -378,9 +369,6 @@ for i in range(N_ENROLLMENTS):
             "enrollment":                        i + 1,
             "enrollment_period_id":              f"{i + 1}_{period_idx}",
             "person_id":                         person_id[i],
-            "student_number":                          student_number[i],
-            "external_person_id":                 external_person_id[i],
-            "canvas_user_id":                    canvas_user_id[i],
             "start_year":                        int(start_years[i]),
             # Descriptive only. start_year remains the train/test split variable.
             # Falls back to the window's closing date for the period-0 sentinel,
@@ -447,7 +435,6 @@ for i in range(N_ENROLLMENTS):
             "fee_exempt_nationality":            float(fee_exempt_nationality[i]),
             "nationality_raw":                   nationality_raw[i],
             "nationality":                       nationality[i],
-            "birth_date":                      birth_date[i],
             "age_at_study_start":                round(float(age[i]), 1),
             "required_ects_undergrad":           float(required_ects_undergrad[i]),
             "required_ects_grad":                float(required_ects_grad[i]),

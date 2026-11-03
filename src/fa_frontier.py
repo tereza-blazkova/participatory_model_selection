@@ -1,6 +1,5 @@
 """
-Fairness-accuracy (FA) frontier, following Liang, Lu, Mu & Okumura (JPE 2024),
-"Algorithm Design: A Fairness-Accuracy Frontier".
+Fairness-accuracy (FA) frontier, following the framework cited in the paper.
 
 Three panels, one per fairness axis, in one row:
 
@@ -12,12 +11,12 @@ Group 1 (the x axis) is always the comparison group and group 0 (the y axis)
 the reference, the same direction as every other output: Female − Male,
 Non-Danish − Danish, Older − Younger (fairness_audit._BINARY_SUBGROUPS).
 
-Methodology (mirrors their replication package)
-----------------------------------------------
+Methodology
+-----------
 1. Group loss is plain 0-1 misclassification error within each group,
    e_g = 1 - accuracy_g, computed at the **enrollment** level (an enrollment is
-   flagged if its max-prob over EWS dates clears τ). This is `est_group_loss()`
-   in their code/classification.py; no reweighting, no balanced error.
+   flagged if its max-prob over EWS dates clears τ). No reweighting, no balanced
+   error.
 
 2. The *achievable set* is the set of (e_1, e_0) pairs reachable by some
    admissible algorithm, closed under randomisation. We enumerate it as
@@ -28,8 +27,7 @@ Methodology (mirrors their replication package)
      - the credits policy swept over its ECTS-behind cutoff, not just the legal
        ≥60 one;
      - for feature sets that *contain* the sensitive attribute, the additional
-       points reachable with group-specific thresholds (their Proposition 2:
-       once the algorithm can condition on group identity the achievable set is
+       points reachable with group-specific thresholds (once the algorithm can condition on group identity the achievable set is
        a rectangle, and the frontier is the line from r_X = b_X to f_X);
 
    then take the convex hull. Convexification is what randomisation buys, and it
@@ -42,8 +40,7 @@ Methodology (mirrors their replication package)
    smallest common error rate attainable with equal errors across groups.
    Group-skew is exactly the case where f_X is *not* on the Pareto arc: both
    group-optimal algorithms err more on the same group, so closing the gap costs
-   accuracy for everyone. Their `eval_balance()` in code/util.py is the same test
-   stated in terms of the two group-optimal algorithms.
+   accuracy for everyone.
 
 4. Two nested algorithm sets are drawn per panel:
 
@@ -230,7 +227,7 @@ def _sweep(scores: np.ndarray, y: np.ndarray, g: np.ndarray,
              PAIR (τ_1, τ_0), and it reaches (e_1(τ_1), e_0(τ_0)) for any pair
              independently, so the achievable set is the product of the two
              groups' error sets; its convex hull is the rectangle
-             [min e_1, max e_1] × [min e_0, max e_0] — their Proposition 2.
+             [min e_1, max e_1] × [min e_0, max e_0].
              All four vertices are returned. The lower-left one alone is not
              enough: a common threshold ties e_1 to e_0, so the other vertices
              are not convex combinations of it and the common-threshold points,
@@ -355,7 +352,7 @@ def _extend_to_fair(V: np.ndarray, start: int, f: np.ndarray,
     Under group skew both group-optimal algorithms favour the same group, so
     reaching equal errors means leaving the Pareto boundary: every step raises
     both error rates and is bought purely for fairness. That arc is part of the
-    FA frontier in their sense, which is why it is drawn.
+    FA frontier, which is why it is drawn.
     """
     n = len(V)
     step = 1 if forward else -1
@@ -415,18 +412,17 @@ def compute_frontier(points: np.ndarray) -> dict:
                 f_exact=f_exact, skewed=skewed, skew_side=skew_side)
 
 
-# ── group-skew bootstrap (their bs_p_value_skewness) ─────────────────────────
+# ── group-skew bootstrap ─────────────────────────
 
 def _skew_pvalue(scores: np.ndarray, y: np.ndarray, g: np.ndarray,
                  g_favoured, g_other, tau: float, n_boot: int,
                  seed: int = RANDOM_SEED, tau_other: float | None = None) -> float:
     """
-    Bootstrap p-value for group-skew at a fixed algorithm, following
-    `bs_p_value_skewness()` in their code/classification.py: hold the algorithm
+    Bootstrap p-value for group-skew at a fixed algorithm: hold the algorithm
     fixed, resample the test set within each group, recompute both group errors,
     and centre the bootstrap distribution on the point estimate.
 
-    As in their test the algorithm used is the one optimal for the group the
+    The algorithm used is the one optimal for the group the
     point estimate says is *worse* off, and the statistic is how much lower the
     favoured group's error is under it. H0 is no skew, so a small p means the
     gap survives sampling noise — i.e. the FA frontier really does extend beyond

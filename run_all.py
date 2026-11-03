@@ -244,7 +244,7 @@ def main() -> None:
     parser.add_argument("--skip",      nargs="+", default=[], metavar="MODEL",
                         help="Models to skip during training, e.g. --skip mlp fasterrisk.")
     parser.add_argument("--use-saved-params", action="store_true", dest="use_saved_params",
-                        help="Re-train from saved _best_params.json instead of library defaults "
+                        help="Re-train from saved _best_params.json instead of the fixed defaults "
                              "(no Optuna search). Implies re-training. Use after a --tune run.")
     parser.add_argument("--strict", action="store_true",
                         help="Abort if any feature set collapses (all-null or constant columns, flat scores).")

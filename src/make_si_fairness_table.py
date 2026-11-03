@@ -304,8 +304,12 @@ def _cell_sizes(df: pd.DataFrame, key: str, ref: str, cells: list[str]) -> list[
     small = {i for i, (n, k) in enumerate(sizes) if disclosure.rate_is_small(k, n)}
     hidden = disclosure.complementary([n for n, _ in sizes], small)
     X = disclosure.SUPPRESSED_TEX
-    return [(X, X) if i in hidden else (f"{n:,}", f"{k:,}")
+    return [(X, X) if i in hidden else (f"{_round10(n):,}", f"{_round10(k):,}")
             for i, (n, k) in enumerate(sizes)]
+
+
+def _round10(v: int) -> int:
+    return int(v / 10 + 0.5) * 10
 
 
 def _build_intersectional_table(df: pd.DataFrame) -> str:
@@ -377,7 +381,8 @@ def _build_intersectional_table(df: pd.DataFrame) -> str:
         r"cell, for test year " + str(MAIN_TEST_YEAR) + r" and the three methods of "
         r"Table~\ref{tab:si_fairness_snapshot}, with 95\% bootstrap CIs computed as "
         r"there. $N$ is the number of enrollments in the cell and Dropouts the number "
-        r"of them that dropped out; the methods score the same enrollments. "
+        r"of them that dropped out, both rounded to the nearest 10 so that no group "
+        r"can be recovered by subtracting across tables; the methods score the same enrollments. "
         r"Each pair of axes uses the enrollments with a value on both; entry "
         r"age is relative to the median of the student's level and cohort. The "
         r"comparisons are descriptive and not corrected for multiple testing.}",

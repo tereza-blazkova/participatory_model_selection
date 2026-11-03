@@ -1,5 +1,5 @@
 """
-Distil the fairness-accuracy frontier (Liang, Lu, Mu & Okumura, JPE 2024): what
+Distil the fairness-accuracy frontier (cited in the paper): what
 pairs of group error rates any algorithm here can reach, and what the workshop's
 participation rules cost within that set.
 
@@ -86,8 +86,7 @@ def prepare(panels: dict, year: int, full_range: bool, zoom: bool):
         ## not stored: the draw script closes the polygon between them.
         ##
         ## Named points on the unconstrained frontier. When one algorithm is
-        ## optimal for BOTH groups the two coincide and take a joint label, as
-        ## in their Figure 10.
+        ## optimal for BOTH groups the two coincide and take a joint label.
         if np.linalg.norm(fa["p1"] - fa["p0"]) < 1e-9:
             named = [(fa["p1"], f"{spec['sym1']} = {spec['sym0']}")]
         else:

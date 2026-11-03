@@ -17,6 +17,7 @@ results differ from those in the paper.
 | I want to | Go to |
 |---|---|
 | See how the selection test works, without any data | `python -m examples.select_with_your_rules` |
+| Check the paper's selections from its published recalls, without any data | `python -m examples.reproduce_paper_selection` |
 | Use the framework at my own institution | [`ADAPTING.md`](ADAPTING.md) |
 | Reuse the surveys and workshop plan | [`instruments/`](instruments/) |
 | Check how the paper's analysis was done | The full pipeline, below |
@@ -26,10 +27,28 @@ results differ from those in the paper.
 ```bash
 conda env create -f environment.yml
 conda activate ews-modeling
+pip install --no-deps fasterrisk==0.1.10
 ```
 
-`pyproject.toml` lists the same dependencies for a pip-based environment. `cvxpy`
-is optional.
+With pip instead (Python 3.11):
+
+```bash
+pip install .
+pip install --no-deps fasterrisk==0.1.10
+```
+
+FasterRisk is installed on its own because its package metadata pins older
+versions of scikit-learn, pandas and NumPy than this project uses; it runs on the
+versions here. NumPy is pinned below 2.3 because FasterRisk 0.1.10 calls
+`ndarray.tostring`, removed in 2.3. `requirements-lock.txt` records the exact
+versions of a tested macOS arm64 environment. `cvxpy` is optional.
+
+Two settings you may need:
+
+- **No GPU:** the neural network falls back to CPU with a warning. Set
+  `EWS_MLP_DEVICE=cpu` to choose this explicitly.
+- **macOS arm64:** if XGBoost crashes, set `OMP_NUM_THREADS=1` (XGBoost and PyTorch
+  each load their own OpenMP runtime).
 
 ## Running the full pipeline
 
@@ -39,7 +58,7 @@ python data/generate_pilot_snapshot.py     # synthetic October 2023 snapshot
 python run_all.py                    # the full pipeline
 ```
 
-`run_all.py` trains every model at library defaults, then runs the bootstrap
+`run_all.py` trains every model at fixed default settings, then runs the bootstrap
 confidence intervals, the participatory selection, the fairness analyses, and
 every table and figure. `python run_all.py --help` lists the options; the most
 useful are

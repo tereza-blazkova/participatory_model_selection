@@ -9,7 +9,7 @@ The two rows are not the same exercise, and the figure exists to keep them
 apart: the data ladder changes the information structure X, while the model
 ladder shrinks the set of permissible algorithms. `e_plus_sensitive` is drawn
 twice — solid without group-aware rules, dashed with them — to separate the
-effect of more covariates from their Prop. 2 (group-specific thresholds).
+effect of more covariates from that of group-specific thresholds.
 
 src/fa_frontier_ladders.py owns the computation and writes the summary CSV;
 this script writes what the figure draws.
@@ -80,7 +80,7 @@ def prepare(ladders: dict, model_ladder_fs: str):
                     series_specs.append({
                         "row": row, "series": i, "label": s["label"],
                         ## Dashed marks the variant that may use group identity
-                        ## in the decision rule itself — their Prop. 2, not an
+                        ## in the decision rule itself, not an
                         ## effect of more covariates; the figure must not blur them.
                         "group_aware": bool(s["group_aware"]),
                         ## The model ladder reuses the repo-wide model colours so

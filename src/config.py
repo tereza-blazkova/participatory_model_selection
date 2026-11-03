@@ -41,9 +41,7 @@ ENROLMENT = [
 # The study programme enters at three levels of one hierarchy: faculty
 # (faculty_code) > department (department_code) > programme
 # (programme_level). The coarse level is there for the programmes the fine one serves
-# badly — too rare to estimate, or new/renamed in a test year — following
-# Nielsen et al.: ch. 2 gives the tabular models the ISCED broad group next to
-# the programme ID, ch. 4 a broad subject area next to the qualification.
+# badly — too rare to estimate, or new/renamed in a test year.
 #
 # programme_level is the programme code split by degree level ("<code>|BA",
 # "<code>|MA"), derived in src/data.py. A code can be shared by a subject's
@@ -56,9 +54,7 @@ ENROLMENT = [
 # src/data.py. The same GPA means different things in programmes with different
 # admission cut-offs; without this, "weak for this programme" is a GPA x
 # programme interaction to be learned from sparse dummies, which is the fitting
-# the MLP does worst. Modelled on ch. 4's national tests "z-standardized within
-# each year and course", and ch. 2's per-programme GPA cut-off. See
-# GPA_REF_MIN_ENROLLMENTS.
+# the MLP does worst. See GPA_REF_MIN_ENROLLMENTS.
 
 # late_pct and missing_pct are used as a PAIR; late_or_missing_pct is their sum
 # by construction and is excluded. Including all three lets the weight split
@@ -144,10 +140,6 @@ GPA_REF_MIN_ENROLLMENTS = 10
 # students. Why pooling costs little: a pooled programme still carries its
 # department and faculty columns.
 #
-# Precedent for the size: Nielsen et al. pool rare levels too — ch. 2 maps
-# strings seen fewer than 250 times in training to [UNK], ch. 4 gives a course
-# its own column only above 25,000 occurrences and pools the rest.
-#
 # Turning it on changes every fitted model. No TRAINING_CODE_VERSION bump is
 # needed: load_model_checked() compares each saved encoder's min_frequency and
 # handle_unknown with the values here and refuses a mismatch.
@@ -165,8 +157,7 @@ OHE_MIN_FREQUENCY = 300
 # unconstrained extrapolation. For a tree it is just "not programme X" at every
 # split, and for L2-penalised LR it is roughly the average programme. The
 # infrequent column was fitted on (rare) training programmes, so it is a trained
-# answer to "a programme we cannot say much about". Nielsen et al. ch. 2 maps
-# unseen strings to [UNK] for the same reason.
+# answer to "a programme we cannot say much about".
 OHE_HANDLE_UNKNOWN = "infrequent_if_exist"
 
 # ── Columns that must never enter a feature list ──────────────────────────────
@@ -253,7 +244,7 @@ ECTS_THRESHOLD = 60
 
 # The points total above which data/generate_pilot_snapshot.py marks a synthetic student
 # as contacted. An arbitrary value for the synthetic data; set your own with real data.
-PILOT_CONTACT_THRESHOLD = 7
+PILOT_CONTACT_THRESHOLD = 5
 
 # Statistical disclosure control: any number or plotted element resting on
 # fewer than this many students (enrollments) is not shown — tables print the

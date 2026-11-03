@@ -1,6 +1,5 @@
 """
 FasterRisk — integer risk score model.
-Liu et al. (2022):https://proceedings.neurips.cc/paper_files/paper/2022/hash/7103444259031cc58051f8c9a4868533-Abstract-Conference.html
 
 Preprocessing pipeline: standard prep (impute + missing indicators + one-hot, no
 scaling) then _MedianBinarizer: 0/1 columns pass through unchanged, every other

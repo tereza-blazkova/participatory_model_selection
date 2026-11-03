@@ -176,8 +176,7 @@ def add_gpa_within_programme(
     a preprocessing step fitted on the test years. Deliberately per cohort, not
     per programme over the training years: admission cut-offs move from year to
     year, and a programme that is new in a test year would otherwise have no
-    reference at all. Following Nielsen et al. ch. 4, whose national-test scores
-    are "z-standardized within each year and course".
+    reference at all.
 
     NaN when the cohort has fewer than GPA_REF_MIN_ENROLLMENTS enrollments with a
     GPA, or no spread; the preprocessing turns that into a missing indicator.

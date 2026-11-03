@@ -13,7 +13,7 @@ This is deliberately NOT src/fa_frontier.py's frontier sweep: that sweep uses
 a single *global* threshold and reports per-group misclassification error
 (1 - accuracy) as it varies, so it never assigns different thresholds to
 different groups. Group-specific thresholding lives in src/debias.py
-(`equal_opportunity_thresholds`, Hardt et al. 2016) — this module reuses that
+(`equal_opportunity_thresholds`) — this module reuses that
 directly and adds the piece debias.py doesn't compute: the overall (pooled)
 enrollment-level recall that results once each group is thresholded at its
 own equal-opportunity τ, compared against the model's current single-
@@ -139,7 +139,7 @@ def _train_pos_rate() -> float | None:
 def _resolve_budget(budget_rate: float | None, unconstrained: bool) -> float | None:
     """Budget to price equalization against; None = unconstrained."""
     if unconstrained:
-        print("  Unconstrained (Hardt et al.) specification — flag rate not capped.")
+        print("  Unconstrained specification — flag rate not capped.")
         return None
     if budget_rate is None:
         budget_rate = _train_pos_rate()
@@ -196,7 +196,7 @@ def equalize_recall(
     single global threshold is calibrated under. This is the specification the
     workshop tolerance is defined against; see
     `budgeted_equal_opportunity_thresholds` in src/debias.py. Pass
-    `budget_rate=None` for the unconstrained Hardt et al. (2016) version, which
+    `budget_rate=None` for the unconstrained version, which
     is retained as a diagnostic: it shows how far the global τ sits from the
     recall frontier, but its "gains" are bought with unbudgeted extra contacts.
     """
@@ -318,7 +318,7 @@ def run_equalized_recall_audit(
     dropout rate as a capacity budget, matching the global threshold's
     calibration — so the reported recall difference is a genuine cost paid at
     constant contacts, which is what the workshop's tolerance was expressed
-    against. `unconstrained=True` reverts to Hardt et al. (2016) without a
+    against. `unconstrained=True` drops the
     budget (diagnostic only).
 
     Saves equalized_recall_audit.csv → results/fairness/.
@@ -389,7 +389,7 @@ if __name__ == "__main__":
                         help="Subgroup columns (default: all binary subgroups)")
     parser.add_argument("--n-boot",      type=int, default=1000, dest="n_boot")
     parser.add_argument("--unconstrained", action="store_true",
-                        help="Drop the capacity budget (plain Hardt et al. 2016). "
+                        help="Drop the capacity budget (plain equal opportunity). "
                              "Diagnostic only: recall 'gains' are then bought with "
                              "unbudgeted extra contacts.")
     parser.add_argument("--budget-rate", type=float, default=None, dest="budget_rate",

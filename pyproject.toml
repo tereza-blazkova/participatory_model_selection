@@ -3,10 +3,9 @@ name = "ews-modeling"
 version = "0.1.0"
 requires-python = ">=3.11"
 dependencies = [
-    # numpy is deliberately unpinned: FasterRisk 0.1.10 fits and predicts on
-    # numpy 2.x. The smoke test in models/fasterrisk_model.py checks this;
-    # run `python -m models.fasterrisk_model` to check a new environment.
-    "numpy",
+    # FasterRisk 0.1.10 calls ndarray.tostring, removed in numpy 2.3.
+    # Run `python -m models.fasterrisk_model` to check a new environment.
+    "numpy==2.2.6",
     "pandas>=2.0",
     "scikit-learn==1.8.0",
     "scipy",
@@ -18,7 +17,8 @@ dependencies = [
     "plotly",
     "graphviz",
     "packaging",
-    "fasterrisk==0.1.10",
+    "requests",           # needed by fasterrisk, which is installed with --no-deps
+    # fasterrisk==0.1.10 is installed separately with --no-deps: see README.md.
     "optuna==4.8.0",
     "shap",               # src/shap_plots.py
 ]

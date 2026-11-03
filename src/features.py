@@ -217,8 +217,7 @@ def build_preprocessor(
     scale=True for LR: median imputation, RobustScaler on numerics.
     scale=False for tree-based models: no scaling (NaN handled natively).
     standardize=True for the MLP: MEAN imputation and StandardScaler — the
-      numeric recipe of the tabular network in Nielsen et al. (2025, ch. 4),
-      which the MLP follows. Overrides `scale`.
+      numeric recipe of the reference network the MLP follows. Overrides `scale`.
     Missing-value indicators are added in every case — see below.
     Fit only on training data.
 
